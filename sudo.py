@@ -215,6 +215,154 @@ def select(row,col,unit,num):
 					break
 	#print(num)
 	
+	
+def channel(row,col,unit,num):
+	#within a unit, look in th rows and find sets of 2 or 3 of a single number in only 1 row of the unit. save them and elimminate that number form that row in all units that share that row.
+	# channeling within the rows
+	print("Channeling")
+	save_r = []
+	for unt in u:
+		temp_save = [""]*3 # one for each of the 3 rows in the unit
+		word_lst = ["","",""]
+		for cell in unt:
+			if len(num[cell])>1:
+				word_lst[row[cell]%3] = word_lst[row[cell]%3]+num[cell]
+		seen1 = set()
+		seen1_add = seen1.add
+		listed1 = word_lst[0]
+		u_listed1 = [x for x in listed1 if not (x in seen1 or seen1_add(x))]
+		seen2 = set()
+		seen2_add = seen2.add
+		listed2 = word_lst[1]
+		u_listed2 = [x for x in listed2 if not (x in seen2 or seen2_add(x))]
+		seen3 = set()
+		seen3_add = seen3.add
+		listed3 = word_lst[2]
+		u_listed3 = [x for x in listed3 if not (x in seen3 or seen3_add(x))]
+		for i in range(1,10):
+			if (u_listed1+u_listed2+u_listed3).count(str(i)) == 1:
+				if str(i) in u_listed1:
+					temp_save[0] = temp_save[0] + str(i)
+				elif str(i) in u_listed2:
+					temp_save[1] = temp_save[1] + str(i)
+				else:
+					temp_save[2] = temp_save[2] + str(i)
+		save_r.append(temp_save[0])
+		save_r.append(temp_save[1])
+		save_r.append(temp_save[2])
+	
+	# channeling in the columns
+	u_by_col1 = list(range(0,81,9))[0:3]+list(range(1,81,9))[0:3]+list(range(2,81,9))[0:3]
+	u_by_col2 = list(range(3,81,9))[0:3]+list(range(4,81,9))[0:3]+list(range(5,81,9))[0:3]
+	u_by_col3 = list(range(6,81,9))[0:3]+list(range(7,81,9))[0:3]+list(range(8,81,9))[0:3]
+	u_by_col4 = list(range(0,81,9))[3:6]+list(range(1,81,9))[3:6]+list(range(2,81,9))[3:6]
+	u_by_col5 = list(range(3,81,9))[3:6]+list(range(4,81,9))[3:6]+list(range(5,81,9))[3:6]
+	u_by_col6 = list(range(6,81,9))[3:6]+list(range(7,81,9))[3:6]+list(range(8,81,9))[3:6]
+	u_by_col7 = list(range(0,81,9))[6:9]+list(range(1,81,9))[6:9]+list(range(2,81,9))[6:9]
+	u_by_col8 = list(range(3,81,9))[6:9]+list(range(4,81,9))[6:9]+list(range(5,81,9))[6:9]
+	u_by_col9 = list(range(6,81,9))[6:9]+list(range(7,81,9))[6:9]+list(range(8,81,9))[6:9]
+	
+	u_by_col = [u_by_col1,u_by_col2,u_by_col3,u_by_col4,u_by_col5,u_by_col6,u_by_col7,u_by_col8,u_by_col9]
+	save_c = []
+	for unt in u_by_col:
+		temp_save = [""]*3 # one for each of the 3 cols in the unit
+		word_lst = ["","",""]
+		for cell in unt:
+			if len(num[cell])>1:
+				word_lst[col[cell]%3] = word_lst[col[cell]%3]+num[cell]
+		seen4 = set()
+		seen4_add = seen4.add
+		listed4 = word_lst[0]
+		u_listed4 = [x for x in listed4 if not (x in seen4 or seen4_add(x))]
+		seen5 = set()
+		seen5_add = seen5.add
+		listed5 = word_lst[1]
+		u_listed5 = [x for x in listed5 if not (x in seen5 or seen5_add(x))]
+		seen6 = set()
+		seen6_add = seen6.add
+		listed6 = word_lst[2]
+		u_listed6 = [x for x in listed6 if not (x in seen6 or seen6_add(x))]
+
+		for i in range(1,10):
+			if (u_listed4+u_listed5+u_listed6).count(str(i)) == 1:
+				if str(i) in u_listed4:
+					temp_save[0] = temp_save[0] + str(i)
+				elif str(i) in u_listed5:
+					temp_save[1] = temp_save[1] + str(i)
+				else:
+					temp_save[2] = temp_save[2] + str(i)
+		save_c.append(temp_save[0])
+		save_c.append(temp_save[1])
+		save_c.append(temp_save[2])
+
+	# eliminating the channels from the rows
+	for chan in range(27):
+		if save_r[chan] != "":
+			unt = chan//3
+			if chan < 9:
+				rw = chan%3
+			elif chan < 18:
+				rw = (chan-9)%3 + 3
+			else:
+				rw = (chan-18)%3 + 6
+			if unt < 3:
+				unt_not = [0,1,2]
+				unt_not.remove(unt)
+			elif unt < 6:
+				unt_not = [3,4,5,]
+				unt_not.remove(unt)
+			else:
+				unt_not = [6,7,8]
+				unt_not.remove(unt)
+			for x in range(0,81):
+				if (row[x] == rw and (unit[x] == unt_not[0] or unit[x] == unt_not[1]) and len(num[x]) > 1):
+					tt = list(num[x])
+					if len(save_r[chan]) > 1:
+						for k in save_r[chan]:
+							try:
+								tt.remove(k)
+							except ValueError:
+								pass
+					else:
+						try:
+							tt.remove(save_r[chan])
+						except ValueError:
+							pass
+					num[x] = "".join(tt)
+					
+	# eliminating the channels from the columns
+	for chan in range(27):
+		if save_c[chan] != "":
+			unt = chan//3
+			cl = chan%9
+			if unt == 0 or unt == 3 or unt == 6: 
+				unt_not = [0,3,6]
+				unt_not.remove(unt)
+			elif unt == 1 or unt == 4 or unt == 7: 
+				unt_not = [1,4,7,]
+				unt_not.remove(unt)
+			else: 
+				unt_not = [2,5,8]
+				unt_not.remove(unt)
+			for x in range(0,81):
+				if (col[x] == cl and (unit[x] == unt_not[0] or unit[x] == unt_not[1]) and len(num[x]) > 1):
+					tt = list(num[x])
+					if len(save_c[chan]) > 1:
+						for k in save_c[chan]:
+							try:
+								tt.remove(k)
+							except ValueError:
+								pass
+					else:
+						try:
+							tt.remove(save_c[chan])
+						except ValueError:
+							pass
+					num[x] = "".join(tt)
+	
+#def omission() # see http://www.learn-sudoku.com/omission.html 	
+#def hidden_pair() # see http://www.sudokuessentials.com/sudoku_tips.html	
+		
 # main			
 a_copy = list()						# make space for a reference copy of a
 while (a_copy != a):				# while the refence isnt equal to the current best guess
@@ -222,7 +370,21 @@ while (a_copy != a):				# while the refence isnt equal to the current best guess
 		a_copy = a[:]				# assign the new reference
 		eliminate(r,c,uu,a)			# eliminate
 	if len("".join(a)) > 81:		# if solved skip selection
-		select(r,c,uu,a)				# if not solved, go into selection
+		select(r,c,uu,a)			# if not solved, go into selection
+		if len("".join(a)) > 81 and a == a_copy:	# if still not solved and selection did nothing
+			channel(r,c,uu,a)
 
-# write a display function
-print(a)
+# a pretty display
+
+if len("".join(a)) == 81: # if solved
+	for i in range(0,81,3):
+		if i%27 == 0 and i != 0 :
+			print("-----------------")
+		if (i+3)%9 == 0:
+			print("%s %s %s" %("".join(a[i]),"".join(a[i+1]),"".join(a[i+2])))
+		else:
+			print("%s %s %s" %("".join(a[i]),"".join(a[i+1]),"".join(a[i+2])),end = "|")
+else:
+	print(a)
+
+#print(a)
